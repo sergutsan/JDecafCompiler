@@ -16,11 +16,13 @@ public class Precompiler
 	private static final String NEXTINT = "scanner.nextInt";
 	private static final String NEXTDOUBLE = "scanner.nextDouble";
 	private static final String NEXTLINE = "scanner.nextLine";
-		
+	private static final String LINESEPARATOR=System.lineSeparator();
+	
 	public DecafFile convert(DecafFile file) throws Exception
 	{
 		String line="";
 		String text="";
+		int lines=0;
 		
 		BufferedReader r = null;
 		
@@ -28,9 +30,17 @@ public class Precompiler
 		{
 			r=new BufferedReader(new FileReader(file));
 
+			boolean mainCode=true;
+			
 			while ((line = r.readLine()) != null)
 			{
-				text+=line+"\r\n";
+				text+=line+LINESEPARATOR;
+				mainCode=mainCode&&line.indexOf("class")==-1;
+				
+				if(mainCode==true)
+				{
+					lines++;
+				}
 			}
 			
 			r.close();
@@ -148,7 +158,8 @@ public class Precompiler
 
 		String filePath=fileName+".java";
 		file=new DecafFile(filePath);
-		file.containsClasses = classes>0;
+		file.properties.containsClasses = classes>0;
+		file.properties.lines=lines;
 		
 		BufferedWriter w = null;
 		
@@ -170,15 +181,15 @@ public class Precompiler
 	private String insertBoilerplateCode(String fileName, String text)
 	{
 		String code="";
-		code+="import java.util.Scanner;\r\n";
-		code+="public class "+fileName+"\r\n";
-		code+="{\r\n";
-		code+="	public static void main(String[] args)\r\n";
-		code+="	{\r\n";
-		code+="		Scanner scanner=new Scanner(System.in);\r\n";
+		code+="import java.util.Scanner;"+LINESEPARATOR;
+		code+="public class "+fileName+LINESEPARATOR;
+		code+="{"+LINESEPARATOR;
+		code+="	public static void main(String[] args)"+LINESEPARATOR;
+		code+="	{"+LINESEPARATOR;
+		code+="		Scanner scanner=new Scanner(System.in);"+LINESEPARATOR;
 		code+=text;
-		code+="	}\r\n";
-		code+="}\r\n";
+		code+="	}"+LINESEPARATOR;
+		code+="}"+LINESEPARATOR;
 		return code;
 	}
 }
