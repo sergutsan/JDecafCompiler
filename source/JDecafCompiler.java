@@ -16,7 +16,7 @@ import javax.tools.ToolProvider;
 
 public class JDecafCompiler
 {
-	//private static final String JDK="C:\\Program Files\\Java\\jdk1.7.0";		//set up path to JDK if needed
+	private static final String JDK="C:\\Program Files\\Java\\jdk1.7.0_25";		//set up path to JDK if needed
 	private static final long HEADER_LINES=6;
 	private static final long FOOTER_LINES=3;
 
@@ -87,8 +87,8 @@ public class JDecafCompiler
 	private static void compile(DecafFile[] files) throws Exception
 	{
 		//setup the environment if needed
-		//String javaHome=System.getProperty("java.home");
-		//System.setProperty("java.home", JDK);
+		String javaHome=System.getProperty("java.home");
+		System.setProperty("java.home", JDK);
 
 		//get an object to collect diagnostic messages
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
@@ -137,7 +137,7 @@ public class JDecafCompiler
 		}
 
 		//restore environment if needed
-		//System.setProperty("java.home", javaHome);
+		System.setProperty("java.home", javaHome);
 	}
 	
 	private static FileProperties getFileProperties(String fileName, DecafFile[] files)
