@@ -13,9 +13,9 @@ public class Precompiler
 {
 	private static final String PRINT = "System.out.print";
 	private static final String PRINTLN = "System.out.println";
-	private static final String NEXTINT = "scanner.nextInt";
-	private static final String NEXTDOUBLE = "scanner.nextDouble";
-	private static final String NEXTLINE = "scanner.nextLine";
+	private static final String READINT = "scanner.nextInt";
+	private static final String READDOUBLE = "scanner.nextDouble";
+	private static final String READLINE = "scanner.nextLine";
 	private static final String LINESEPARATOR=System.lineSeparator();
 	
 	public DecafFile convert(DecafFile file) throws Exception
@@ -97,22 +97,22 @@ public class Precompiler
 					token.setNextToken(next);
 				}			
 			case TokenTypes.IDENTIFIER:
-				if(token.getLexeme().equals("nextInt"))
+				if(token.getLexeme().equals("readInt"))
 				{
 					Token next=token.getNextToken();
-					token.set(NEXTINT.toCharArray(), 0, NEXTINT.length()-1, 0, token.type);
+					token.set(READINT.toCharArray(), 0, READINT.length()-1, 0, token.type);
 					token.setNextToken(next);
 				}
-				else if(token.getLexeme().equals("nextDouble"))
+				else if(token.getLexeme().equals("readDouble"))
 				{
 					Token next=token.getNextToken();
-					token.set(NEXTDOUBLE.toCharArray(), 0, NEXTDOUBLE.length()-1, 0, token.type);
+					token.set(READDOUBLE.toCharArray(), 0, READDOUBLE.length()-1, 0, token.type);
 					token.setNextToken(next);
 				}
-				else if(token.getLexeme().equals("nextLine"))
+				else if(token.getLexeme().equals("readLine"))
 				{
 					Token next=token.getNextToken();
-					token.set(NEXTLINE.toCharArray(), 0, NEXTLINE.length()-1, 0, token.type);
+					token.set(READLINE.toCharArray(), 0, READLINE.length()-1, 0, token.type);
 					token.setNextToken(next);
 				}
 			case TokenTypes.DATA_TYPE:

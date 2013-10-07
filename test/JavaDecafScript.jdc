@@ -1,5 +1,5 @@
 print("Give me some text: ");
-String str=nextLine();
+String str=readLine();
 
 boolean palindrome=true;
 int i=0;
