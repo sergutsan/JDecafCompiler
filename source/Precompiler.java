@@ -15,7 +15,7 @@ public class Precompiler
 	private static final String PRINTLN = "System.out.println";
 	private static final String READINT = "scanner.nextInt";
 	private static final String READDOUBLE = "scanner.nextDouble";
-	private static final String READLINE = "scanner.nextLine";
+	private static final String READLINE = "scanner.next";
 	private static final String LINESEPARATOR=System.lineSeparator();
 	
 	public DecafFile convert(DecafFile file) throws Exception
@@ -57,6 +57,8 @@ public class Precompiler
 		}
 
 		DocumentTokenizer tokenizer=new DocumentTokenizer(text);
+		
+		//System.out.println(tokenizer);
 
 		boolean inClass=false;
 		int classes=0;
@@ -64,16 +66,32 @@ public class Precompiler
 
 		while(tokenizer.hasMoreTokens())
 		{
-			Token token=tokenizer.nextToken();
+			if(isMethod(tokenizer)==true)
+			{
+				if(classes!=0)
+				{
+					if(inClass==false)
+					{
+						throw new Exception("stand-alone methods are not allowed after class definitions");
+					}
+				}
+				else
+				{
+					processMethod(tokenizer);
+					continue;
+				}
+			}
+		
+			CodeToken token=tokenizer.nextToken();
 
-			switch(token.type)
+			switch(token.token.type)
 			{
 			case TokenTypes.WHITESPACE:
 				break;
 			case TokenTypes.NULL:
 				break;
 			case TokenTypes.RESERVED_WORD:
-				if(token.getLexeme().equals("class"))
+				if(token.token.getLexeme().equals("class"))
 				{
 					if(inClass==true)
 					{
@@ -82,49 +100,74 @@ public class Precompiler
 
 					classes++;
 					inClass=true;
-				}
+				}				
 			case TokenTypes.FUNCTION:
-				if(token.getLexeme().equals("print"))
+				if(token.token.getLexeme().equals("print"))
 				{
-					Token next=token.getNextToken();
-					token.set(PRINT.toCharArray(), 0, PRINT.length()-1, 0, token.type);
-					token.setNextToken(next);
+					CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);
+					
+					if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
+					{					
+						Token next=token.token.getNextToken();
+						token.token.set(PRINT.toCharArray(), 0, PRINT.length()-1, 0, token.token.type);
+						token.token.setNextToken(next);
+					}
 				}
-				else if(token.getLexeme().equals("println"))
+				else if(token.token.getLexeme().equals("println"))
 				{
-					Token next=token.getNextToken();
-					token.set(PRINTLN.toCharArray(), 0, PRINTLN.length()-1, 0, token.type);
-					token.setNextToken(next);
+					CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);
+					
+					if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
+					{					
+						Token next=token.token.getNextToken();
+						token.token.set(PRINTLN.toCharArray(), 0, PRINTLN.length()-1, 0, token.token.type);
+						token.token.setNextToken(next);
+					}
 				}			
 			case TokenTypes.IDENTIFIER:
-				if(token.getLexeme().equals("readInt"))
+				if(token.token.getLexeme().equals("readInt"))
 				{
-					Token next=token.getNextToken();
-					token.set(READINT.toCharArray(), 0, READINT.length()-1, 0, token.type);
-					token.setNextToken(next);
+					CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);
+					
+					if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
+					{					
+						Token next=token.token.getNextToken();
+						token.token.set(READINT.toCharArray(), 0, READINT.length()-1, 0, token.token.type);
+						token.token.setNextToken(next);
+					}
 				}
-				else if(token.getLexeme().equals("readDouble"))
+				else if(token.token.getLexeme().equals("readDouble"))
 				{
-					Token next=token.getNextToken();
-					token.set(READDOUBLE.toCharArray(), 0, READDOUBLE.length()-1, 0, token.type);
-					token.setNextToken(next);
+					CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);
+					
+					if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
+					{					
+						Token next=token.token.getNextToken();
+						token.token.set(READDOUBLE.toCharArray(), 0, READDOUBLE.length()-1, 0, token.token.type);
+						token.token.setNextToken(next);
+					}
 				}
-				else if(token.getLexeme().equals("readLine"))
+				else if(token.token.getLexeme().equals("readLine"))
 				{
-					Token next=token.getNextToken();
-					token.set(READLINE.toCharArray(), 0, READLINE.length()-1, 0, token.type);
-					token.setNextToken(next);
+					CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);
+					
+					if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
+					{					
+						Token next=token.token.getNextToken();
+						token.token.set(READLINE.toCharArray(), 0, READLINE.length()-1, 0, token.token.type);
+						token.token.setNextToken(next);
+					}
 				}
 			case TokenTypes.DATA_TYPE:
 			case TokenTypes.SEPARATOR:
-				if(token.getLexeme().equals("{"))
+				if(token.token.getLexeme().equals("{"))
 				{
 					if(inClass==true)
 					{
 						braces++;
 					}
 				}
-				else if(token.getLexeme().equals("}"))
+				else if(token.token.getLexeme().equals("}"))
 				{
 					if(inClass==true)
 					{
@@ -151,8 +194,8 @@ public class Precompiler
 		final int lastPeriodPos = fileName.lastIndexOf('.');
 
 		fileName=fileName.substring(0, lastPeriodPos);
-
-		text=insertBoilerplateCode(fileName, tokenizer.stringifyPlainCode());
+		
+		text=insertBoilerplateCode(fileName, tokenizer.stringifyMainCode());
 		text+="\r\n";
 		text+=tokenizer.stringifyClasses();
 
@@ -177,8 +220,135 @@ public class Precompiler
 
 		return file;		
 	}
+
+	private void processMethod(DocumentTokenizer tokenizer) throws Exception
+	{
+		CodeToken token=null;
+		do
+		{
+			if(tokenizer.hasMoreTokens())
+			{
+				token=tokenizer.nextToken();
+			}
+			else
+			{
+				throw new Exception("stand-alone method not started properly");
+			}
+
+		} while(token.token.type!=TokenTypes.DATA_TYPE&&token.token.type==TokenTypes.WHITESPACE);
 		
-	private String insertBoilerplateCode(String fileName, String text)
+		token.isMethodStart=true;
+
+		do
+		{
+			if(tokenizer.hasMoreTokens())
+			{
+				token=tokenizer.nextToken();
+			}
+			else
+			{
+				throw new Exception("stand-alone method body not started properly");
+			}
+			
+		} while(token.token.isLeftCurly()==false);
+		
+		boolean stop=false;
+		int braces=1;
+		
+		while(stop==false)
+		{
+			if(tokenizer.hasMoreTokens())
+			{
+				token=tokenizer.nextToken();
+			}
+			else
+			{
+				throw new Exception("stand-alone method not terminated properly");
+			}
+			
+			if(token.token.isLeftCurly()==true)
+			{
+				braces++;
+			}
+			
+			if(token.token.isRightCurly()==true)
+			{
+				braces--;
+			}
+			
+			if(braces==0)
+			{
+				stop=true;
+			}
+		}
+		
+		token.isMethodStop=true;
+	}
+	
+	private boolean isMethod(DocumentTokenizer tokenizer) throws Exception
+	{
+		int position=tokenizer.getCurrentPosition();
+
+		CodeToken token=null;
+		
+		do
+		{
+			token=tokenizer.peekToken(position++);
+			
+			if(token==null)
+			{
+				return false;
+			}
+			
+		} while(token.token.type!=TokenTypes.DATA_TYPE&&token.token.type==TokenTypes.WHITESPACE);
+
+		if(token.token.type!=TokenTypes.DATA_TYPE)
+		{
+			return false;
+		}
+		
+		//Token dataType=token;
+		
+		do
+		{
+			token=tokenizer.peekToken(position++);
+
+			if(token==null)
+			{
+				return false;
+			}
+			
+		} while(token.token.type!=TokenTypes.IDENTIFIER&&token.token.type==TokenTypes.WHITESPACE);
+
+		if(token.token.type!=TokenTypes.IDENTIFIER)
+		{
+			return false;
+		}
+		
+		//Token identifier=token;
+		
+		do
+		{
+			token=tokenizer.peekToken(position++);
+			
+			if(token==null)
+			{
+				return false;
+			}
+
+		} while(token.token.type!=TokenTypes.SEPARATOR&&token.token.type==TokenTypes.WHITESPACE);
+
+		if(token.token.type!=TokenTypes.SEPARATOR||!token.token.getLexeme().equals("("))
+		{
+			return false;
+		}
+
+		//Token separator=token;
+		
+		return true;		
+	}
+		
+	private String insertBoilerplateCode(String fileName, String[] text)
 	{
 		String code="";
 		code+="import java.util.Scanner;"+LINESEPARATOR;
@@ -187,8 +357,8 @@ public class Precompiler
 		code+="	public static void main(String[] args)"+LINESEPARATOR;
 		code+="	{"+LINESEPARATOR;
 		code+="		Scanner scanner=new Scanner(System.in);"+LINESEPARATOR;
-		code+=text;
-		code+="	}"+LINESEPARATOR;
+		code+=text[0];
+		code+="}"+text[1];
 		code+="}"+LINESEPARATOR;
 		return code;
 	}

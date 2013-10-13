@@ -1,0 +1,35 @@
+print("Give me some text: ");
+String str=readLine();
+
+print("Give me a number: ");
+int a=readInt();
+
+print("Give me a number: ");
+int b=readInt();
+
+println(plus(a,b));
+println(minus(a,b));
+
+int plus(int a, int b)
+{
+	return a+b;
+}
+
+int minus(int a, int b)
+{
+	return a-b;
+}
+
+class Test
+{
+	{
+		{
+			int x;
+		}
+	}
+}
+
+class Test2
+{
+	int y;
+}

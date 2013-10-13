@@ -18,13 +18,13 @@ public class JDecafCompiler
 {
 	private static final String JDK="C:\\Program Files\\Java\\jdk1.7.0_25";		//set up path to JDK if needed
 	private static final long HEADER_LINES=6;
-	private static final long FOOTER_LINES=3;
+	private static final long FOOTER_LINES=2;
 
 	public static void main(String[] args)
 	{
 		if(args.length==0)
 		{
-			System.out.println("No source .java files given...");
+			System.out.println("No source .jdc files given...");
 			return;
 		}
 
@@ -43,7 +43,7 @@ public class JDecafCompiler
 				}
 				catch(Exception e)
 				{
-					System.out.println("Error: "+e.getMessage()+"\nfile:"+file.getAbsoluteFile());
+					System.out.println("Error 1: "+e.getMessage()+"\nfile:"+file.getAbsoluteFile());
 					System.out.println("*** The process will terminate ***");
 					return;				
 				}
@@ -60,7 +60,7 @@ public class JDecafCompiler
 		}
 		catch(Exception e)
 		{
-			System.out.println("Error: "+e.getMessage());
+			System.out.println("Error 2: "+e.getMessage());
 			System.out.println("*** The process will terminate ***");
 		}
 	}

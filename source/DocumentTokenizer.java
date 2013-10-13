@@ -10,7 +10,7 @@ import org.fife.ui.rsyntaxtextarea.modes.GroovyTokenMaker;
 
 public class DocumentTokenizer
 {
-	private ArrayList<Token> tokens=new ArrayList<Token>();
+	private ArrayList<CodeToken> tokens=new ArrayList<CodeToken>();
 	private int position;
 
 	public DocumentTokenizer(String text)
@@ -19,23 +19,30 @@ public class DocumentTokenizer
 		position=0;
 	}
 	
-	public String stringifyPlainCode()
+	public String[] stringifyMainCode()
 	{
 		int position=0;
 		boolean stop=false;
-		String text="";
+		boolean method=false;
+		boolean methodsStarted=false;
+		String mainCode="";
+		String methods="";
+		int noOfMethods=0;
+		String[] code=new String[2];
 		
 		while(position<tokens.size()&&stop==false)
 		{
-			Token token=tokens.get(position++);
+			CodeToken token=tokens.get(position++);
 			
-			if(token.type==TokenTypes.NULL)
+			String nextLexeme="";
+			
+			if(token.token.type==TokenTypes.NULL)
 			{
-				text+='\n';
+				nextLexeme="\n";
 			}
 			else
 			{
-				String lexeme=token.getLexeme();
+				String lexeme=token.token.getLexeme();
 				
 				if(lexeme.equals("class"))
 				{
@@ -43,12 +50,43 @@ public class DocumentTokenizer
 				}
 				else
 				{
-					text+=lexeme;
+					nextLexeme=lexeme;
 				}
 			}
-		}
 
-		return text;
+			if(token.isMethodStart==true)
+			{
+				if(methodsStarted==false)
+				{
+					methodsStarted=true;
+				}
+				
+				methods+=" private static ";
+				method=true;
+				noOfMethods++;
+			}
+			
+			if(methodsStarted==true)
+			{
+				methods+=nextLexeme;
+				
+				if(token.isMethodStop==true)
+				{
+					method=false;
+				}
+			}
+			else
+			{
+				mainCode+=nextLexeme;
+			}	
+		
+			//System.out.println(nextLexeme);
+		}
+		
+		code[0]=mainCode;
+		code[1]=methods;
+
+		return code;
 	}
 
 	public String stringifyClasses()
@@ -60,9 +98,9 @@ public class DocumentTokenizer
 		
 		while(position<tokens.size()&&stop==false)
 		{
-			Token token=tokens.get(position++);
+			CodeToken token=tokens.get(position++);
 			
-			if(token.type==TokenTypes.NULL)
+			if(token.token.type==TokenTypes.NULL)
 			{
 				if(start==true)
 				{
@@ -71,7 +109,7 @@ public class DocumentTokenizer
 			}
 			else
 			{
-				String lexeme=token.getLexeme();
+				String lexeme=token.token.getLexeme();
 				
 				if(lexeme.equals("class"))
 				{
@@ -90,20 +128,20 @@ public class DocumentTokenizer
 	
 	public String stringify()
 	{
-		Iterator<Token> iterator=tokens.iterator();
+		Iterator<CodeToken> iterator=tokens.iterator();
 		String text="";
 		
 		while(iterator.hasNext())
 		{
-			Token token=iterator.next();
+			CodeToken token=iterator.next();
 			
-			if(token.type==TokenTypes.NULL)
+			if(token.token.type==TokenTypes.NULL)
 			{
 				text+="\r\n";
 			}
 			else
 			{
-				text+=token.getLexeme();
+				text+=token.token.getLexeme();
 			}
 		}
 		
@@ -112,12 +150,12 @@ public class DocumentTokenizer
 
 	public String stringifyFull()
 	{
-		Iterator<Token> iterator=tokens.iterator();
+		Iterator<CodeToken> iterator=tokens.iterator();
 		String text="";
 		
 		while(iterator.hasNext())
 		{
-			text+=iterator.next().toString();
+			text+=iterator.next().token.toString()+"\n";
 		}
 		
 		return text;
@@ -145,7 +183,7 @@ public class DocumentTokenizer
 		return tokens.size();
 	}
 	
-	public Token nextToken()
+	public CodeToken nextToken()
 	{
 		if(hasMoreTokens()==false)
 		{
@@ -153,6 +191,21 @@ public class DocumentTokenizer
 		}
 		
 		return tokens.get(position++);
+	}
+
+	public CodeToken peekToken(int position)
+	{
+		if(position>=tokens.size()||position<0)
+		{
+			return null;
+		}
+		
+		return tokens.get(position);
+	}
+	
+	public int getCurrentPosition()
+	{
+		return position;
 	}
 	
 	public boolean hasMoreTokens()
@@ -174,11 +227,15 @@ public class DocumentTokenizer
 				Segment segment=new Segment(line.toCharArray(),0,line.length());
 				GroovyTokenMaker tokenMaker=new GroovyTokenMaker();
 				Token token=tokenMaker.getTokenList(segment,TokenTypes.NULL,0);
+				CodeToken codeToken=new CodeToken();
+				codeToken.token=token;
 				
 				while(token!=null)
 				{
-					tokens.add(token);
+					tokens.add(codeToken);
+					codeToken=new CodeToken();
 					token=token.getNextToken();
+					codeToken.token=token;
 				}
 			}
 		}
@@ -190,4 +247,11 @@ public class DocumentTokenizer
 			}
 		}
 	}
+}
+
+class CodeToken
+{
+	public Token token;
+	public boolean isMethodStart=false;
+	public boolean isMethodStop=false;
 }
