@@ -1,0 +1,37 @@
+print("Give me some text: ");
+String str=nextLine();
+
+boolean palindrome=true;
+int i=0;
+int length=str.length();
+
+//wwhile(i<length/2&&palindrome==true)
+{
+    if(str.charAt(i)!=str.charAt(length-i-1))
+    {
+        palindrome=false;
+    }
+    else
+    {
+        i++;
+    }
+}
+
+println(palindrome==true?"is palindrome":"is not a palindrome");
+
+class Test
+{
+	{
+		{
+		int x;
+//		intt y;
+		}
+	}
+}
+
+class Test2
+{
+	int y;
+}
+
+//int y;

@@ -1,0 +1,47 @@
+One o=new One();
+int x=o.op1(3);
+
+print("give me your age");
+int age=readInt();
+
+print("give me your name");
+String name=readLine();
+
+println(name+" "+age);
+
+void hi()
+{
+	String s=readLine();
+	print("test");
+}
+
+int[] less(int a)
+{
+	String s=readLine();
+	print("test");
+	return new int[2];
+}
+
+class One
+{
+	int i;
+	
+	public int op1(int a)
+	{
+		String s=readLine();
+		print("test");
+		return 2;
+	}		
+}
+
+class Two
+{
+	int i;
+	
+	public int op1(int a)
+	{
+		String s=readLine();
+		print("test");
+		return 2;
+	}		
+}
