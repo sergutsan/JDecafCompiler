@@ -307,7 +307,7 @@ public class Precompiler
 			
 		} while(token.token.type==TokenTypes.WHITESPACE);
 
-		if(token.token.type!=TokenTypes.DATA_TYPE)
+		if(token.token.type!=TokenTypes.DATA_TYPE&&token.token.type!=TokenTypes.IDENTIFIER)
 		{
 			if(token.token.type==TokenTypes.RESERVED_WORD)
 			{
@@ -323,9 +323,14 @@ public class Precompiler
 		}
 		else
 		{
+			if(token.token.getLexeme().equals(";")||token.token.getLexeme().equals("."))
+			{
+				return false;
+			}
+			
 			token=tokenizer.peekToken(position++);
 
-			if(token==null)
+			if(token==null||token.token.type==TokenTypes.NULL)
 			{
 				return false;
 			}
@@ -339,7 +344,7 @@ public class Precompiler
 
 				token=tokenizer.peekToken(position++);
 
-				if(token==null)
+				if(token==null||token.token.type==TokenTypes.NULL)
 				{
 					return false;
 				}
@@ -366,10 +371,14 @@ public class Precompiler
 			}
 			
 		} while(token.token.type==TokenTypes.WHITESPACE);
-
-		
+	
 		
 		if(token.token.type!=TokenTypes.IDENTIFIER)
+		{
+			return false;
+		}
+
+		if(token.token.getLexeme().equals(";")||token.token.getLexeme().equals("."))
 		{
 			return false;
 		}
