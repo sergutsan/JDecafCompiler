@@ -16,6 +16,9 @@ public class Precompiler
 	private static final String READINT = "scanner.nextInt";
 	private static final String READDOUBLE = "scanner.nextDouble";
 	private static final String READLINE = "scanner.next";
+	private static final String READER = "private static Scanner scanner=new Scanner(System.in);";
+	private static final String DELIMITER = " static{scanner.useDelimiter(System.getProperty(\"line.separator\"));}";
+	private static final String SCANNER = READER+DELIMITER;
 	private static final String LINESEPARATOR=System.lineSeparator();
 	
 	public DecafFile convert(DecafFile file) throws Exception
@@ -78,7 +81,6 @@ public class Precompiler
 				else
 				{
 					processMethod(tokenizer);
-					continue;
 				}
 			}
 		
@@ -164,6 +166,13 @@ public class Precompiler
 				{
 					if(inClass==true)
 					{
+						if(braces==0)
+						{
+							Token next=token.token.getNextToken();
+							token.token.set(("{"+SCANNER).toCharArray(), 0, ("{"+SCANNER).length()-1, 0, token.token.type);
+							token.token.setNextToken(next);
+						}
+						
 						braces++;
 					}
 				}
@@ -223,31 +232,29 @@ public class Precompiler
 
 	private void processMethod(DocumentTokenizer tokenizer) throws Exception
 	{
+		int position=tokenizer.getCurrentPosition();
+
 		CodeToken token=null;
+		
 		do
 		{
-			if(tokenizer.hasMoreTokens())
-			{
-				token=tokenizer.nextToken();
-			}
-			else
+			token=tokenizer.peekToken(position++);
+			
+			if(token==null)
 			{
 				throw new Exception("stand-alone method not started properly");
 			}
-
-		} while(token.token.type!=TokenTypes.DATA_TYPE&&token.token.type==TokenTypes.WHITESPACE);
+		} while(token.token.type==TokenTypes.WHITESPACE);
 		
 		token.isMethodStart=true;
 
 		do
 		{
-			if(tokenizer.hasMoreTokens())
+			token=tokenizer.peekToken(position++);
+			
+			if(token==null)
 			{
-				token=tokenizer.nextToken();
-			}
-			else
-			{
-				throw new Exception("stand-alone method body not started properly");
+				throw new Exception("stand-alone method not started properly");
 			}
 			
 		} while(token.token.isLeftCurly()==false);
@@ -257,11 +264,9 @@ public class Precompiler
 		
 		while(stop==false)
 		{
-			if(tokenizer.hasMoreTokens())
-			{
-				token=tokenizer.nextToken();
-			}
-			else
+			token=tokenizer.peekToken(position++);
+			
+			if(token==null)
 			{
 				throw new Exception("stand-alone method not terminated properly");
 			}
@@ -300,11 +305,53 @@ public class Precompiler
 				return false;
 			}
 			
-		} while(token.token.type!=TokenTypes.DATA_TYPE&&token.token.type==TokenTypes.WHITESPACE);
+		} while(token.token.type==TokenTypes.WHITESPACE);
 
 		if(token.token.type!=TokenTypes.DATA_TYPE)
 		{
-			return false;
+			if(token.token.type==TokenTypes.RESERVED_WORD)
+			{
+				if(token.token.getLexeme().equals("void")==false)
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			token=tokenizer.peekToken(position++);
+
+			if(token==null)
+			{
+				return false;
+			}
+			
+			if(token.token.type!=TokenTypes.WHITESPACE)
+			{
+				if(token.token.type!=TokenTypes.SEPARATOR&&token.token.getLexeme().equals("[")==false)
+				{
+					return false;
+				}
+
+				token=tokenizer.peekToken(position++);
+
+				if(token==null)
+				{
+					return false;
+				}
+				
+				if(token.token.type!=TokenTypes.WHITESPACE)
+				{
+					if(token.token.type!=TokenTypes.SEPARATOR&&token.token.getLexeme().equals("]")==false)
+					{
+						return false;
+					}
+				}
+			}
 		}
 		
 		//Token dataType=token;
@@ -318,8 +365,10 @@ public class Precompiler
 				return false;
 			}
 			
-		} while(token.token.type!=TokenTypes.IDENTIFIER&&token.token.type==TokenTypes.WHITESPACE);
+		} while(token.token.type==TokenTypes.WHITESPACE);
 
+		
+		
 		if(token.token.type!=TokenTypes.IDENTIFIER)
 		{
 			return false;
@@ -354,9 +403,9 @@ public class Precompiler
 		code+="import java.util.Scanner;"+LINESEPARATOR;
 		code+="public class "+fileName+LINESEPARATOR;
 		code+="{"+LINESEPARATOR;
+		code+="		"+SCANNER+LINESEPARATOR;
 		code+="	public static void main(String[] args)"+LINESEPARATOR;
 		code+="	{"+LINESEPARATOR;
-		code+="		Scanner scanner=new Scanner(System.in);"+LINESEPARATOR;
 		code+=text[0];
 		code+="}"+text[1];
 		code+="}"+LINESEPARATOR;

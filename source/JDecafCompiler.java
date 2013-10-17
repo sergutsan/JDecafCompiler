@@ -61,6 +61,7 @@ public class JDecafCompiler
 		catch(Exception e)
 		{
 			System.out.println("Error 2: "+e.getMessage());
+			e.printStackTrace();
 			System.out.println("*** The process will terminate ***");
 		}
 	}
