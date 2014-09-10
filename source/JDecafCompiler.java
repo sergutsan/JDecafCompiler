@@ -18,7 +18,7 @@ import javax.tools.ToolProvider;
 
 public class JDecafCompiler
 {
-	private static final String JDK="C:\\Program Files\\Java\\jdk1.7.0_25";		//set up path to JDK if needed
+	private static final String JDK="C:\\Program Files\\Java\\jdk1.8.0_05";		//set up path to JDK if needed
 	private static final long HEADER_LINES=6;
 	private static final long FOOTER_LINES=2;
 
