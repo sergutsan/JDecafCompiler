@@ -29,7 +29,11 @@ public class JDecafCompiler
 			System.out.println("No source .jdc files given...");
 			return;
 		}
-
+		JDecafCompiler c = new JDecafCompiler(); 
+		c.launch(args);
+	}
+	
+	private void launch(String... args) {
 		//get references for the files to be compiled
 		DecafFile[] files=new DecafFile[args.length];
 		
@@ -69,7 +73,7 @@ public class JDecafCompiler
 		}
 	}
 
-	private static DecafFile precompile(DecafFile file) throws Exception
+	private DecafFile precompile(DecafFile file) throws Exception
 	{
 		if (file.isDirectory())
 		{
@@ -88,7 +92,7 @@ public class JDecafCompiler
 		return file;
 	}
 	
-	private static void compile(DecafFile[] files) throws Exception
+	private void compile(DecafFile[] files) throws Exception
 	{
 		//setup the environment if needed
 		String javaHome=System.getProperty("java.home");
@@ -148,7 +152,7 @@ public class JDecafCompiler
 		System.setProperty("java.home", javaHome);
 	}
 	
-	private static FileProperties getFileProperties(String fileName, DecafFile[] files)
+	private FileProperties getFileProperties(String fileName, DecafFile[] files)
 	{	
 		for(DecafFile file: files)
 		{
