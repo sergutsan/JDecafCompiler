@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Iterator;
 import java.util.Scanner;
 
@@ -10,7 +11,7 @@ import org.fife.ui.rsyntaxtextarea.modes.GroovyTokenMaker;
 
 public class DocumentTokenizer
 {
-	private ArrayList<CodeToken> tokens=new ArrayList<CodeToken>();
+	private List<CodeToken> tokens=new ArrayList<CodeToken>();
 	private int position;
 
 	public DocumentTokenizer(String text)
