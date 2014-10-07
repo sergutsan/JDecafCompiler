@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.MissingResourceException;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -65,10 +66,14 @@ public class JDecafCompiler
 		{
 			compile(files);
 		}
+		catch (ConfigurationException e) 
+		{
+			System.out.println("Configuration Error: " + e.getMessage());
+		}
 		catch(Exception e)
 		{
-			System.out.println("Error 2: "+e.getMessage());
-			//e.printStackTrace();
+			System.out.println("Error 2: " + e.getMessage());
+			e.printStackTrace();
 			System.out.println("*** The process will terminate ***");
 		}
 	}
@@ -103,6 +108,10 @@ public class JDecafCompiler
 
 		//get a reference to the compiler
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+		
+		if (compiler == null) {
+			throw new ConfigurationException("No Java compiler available. Please review your local configuration."); 
+		}
 
 		//get a file manager for the files to be compiled
 		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
@@ -168,6 +177,7 @@ public class JDecafCompiler
 
 class DecafFile extends File
 {
+	private static final long serialVersionUID = 1L;
 	public FileProperties properties;
 	
 	public DecafFile(String name)
@@ -182,3 +192,11 @@ class FileProperties
 	public boolean containsClasses;
 	public int lines;
 }
+
+class ConfigurationException extends RuntimeException {
+	private static final long serialVersionUID = 221L;
+	public ConfigurationException(String s) {
+		super(s);
+	}
+}
+
