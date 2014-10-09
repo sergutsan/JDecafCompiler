@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenTypes;
@@ -68,8 +69,6 @@ public class Precompiler
 
 		DocumentTokenizer tokenizer=new DocumentTokenizer(text);
 		
-		//System.out.println(tokenizer);
-
 		boolean inClass=false;
 		int classes=0;
 		int braces=0;
@@ -326,6 +325,13 @@ public class Precompiler
 					return false;
 				}
 			}
+			else if(token.token.type==TokenTypes.FUNCTION) 
+			{
+				String[] JAVA_LANG_CLASSES = {"Boolean","Byte","Character","Class","ClassLoader","ClassValue","Compiler","Double","Enum","Float","InheritableThreadLocal","Integer","Long","Math","Number","Object","Package","Process","ProcessBuilder","Runtime","RuntimePermission","SecurityManager","Short","StackTraceElement","StrictMath","String","StringBuffer","StringBuilder","System","Thread","ThreadGroup","Throwable","Void"};
+				if (!Arrays.asList(JAVA_LANG_CLASSES).contains(token.token.getLexeme())) {
+					return false;
+				}
+			}
 			else
 			{
 				return false;
@@ -413,7 +419,7 @@ public class Precompiler
 
 		//Token separator=token;
 		
-		return true;		
+		return true;
 	}
 
 	private String insertBoilerplateCode(String fileName, String[] text)
