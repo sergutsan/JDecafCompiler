@@ -140,6 +140,7 @@ public class Precompiler
 				{
 					substituteToken(tokenizer, token, READLINE);
 				}
+			// Literals are boxed. This makes the s/==/.equals/g substitution easier 
 			case TokenTypes.LITERAL_BOOLEAN:
 				// LITERAL_BOOLEAN produces many false positives :-(
 				if(token.token.getLexeme().equals("true"))
@@ -156,6 +157,9 @@ public class Precompiler
 				break;
 			case TokenTypes.LITERAL_NUMBER_DECIMAL_INT:
 				substituteToken(tokenizer, token, "(new Integer(" + token.token.getLexeme() + "))");
+				break;
+			case TokenTypes.LITERAL_NUMBER_FLOAT:
+				substituteToken(tokenizer, token, "(new Double(" + token.token.getLexeme() + "))");
 				break;
 			case TokenTypes.NULL:
 				break;
