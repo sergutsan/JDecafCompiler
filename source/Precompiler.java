@@ -95,6 +95,27 @@ public class Precompiler
 			switch(token.token.type)
 			{
 			case TokenTypes.DATA_TYPE:
+				// FIXME: change primitive types to boxed types so we can change == for .equals()
+				String type = token.token.getLexeme();
+				if (type.equals("int")) {
+
+				} else if (type.equals("long")) {
+					
+				} else if (type.equals("double")) {
+					
+				} else if (type.equals("boolean")) {
+					
+				} else if (type.equals("char")) {
+					
+				} else if (type.equals("byte")) {
+					
+				} else if (type.equals("short")) {
+					
+				} else if (type.equals("float")) {
+					
+				} else {
+					throw new JavaDecafException("Unsupported primitive type: " + type);
+ 				}
 				break;
 			case TokenTypes.FUNCTION:
 				if(token.token.getLexeme().equals("print"))
