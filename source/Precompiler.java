@@ -265,6 +265,23 @@ public class Precompiler
 		return file;		
 	}
 
+	/**
+	 * Substitutes the given token by another token containing the given string. 
+	 * @param tokenizer the tokenizer (containing the current position)
+	 * @param token the token to be substituted in the tokenizer
+	 * @param newToken the text for the new token
+	 */
+	private void substituteToken(DocumentTokenizer tokenizer, CodeToken token, String newToken) {
+		CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);	
+		if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
+		{					
+			Token next=token.token.getNextToken();
+			token.token.set(newToken.toCharArray(), 0, newToken.length()-1, 0, token.token.type);
+			token.token.setNextToken(next);
+		}
+	}
+
+	
 	private void processMethod(DocumentTokenizer tokenizer)
 	{
 		int position=tokenizer.getCurrentPosition();
