@@ -18,14 +18,14 @@ public class Precompiler
 	private static final String READER = "private static Scanner scanner=new Scanner(System.in);";
 	private static final String DELIMITER = " static{scanner.useDelimiter(System.getProperty(\"line.separator\"));}";
 	private static final String SCANNER = READER+DELIMITER;
-	private static final String LINESEPARATOR=System.lineSeparator();
-	private static final String HEADER1 = "import java.util.Scanner;"+LINESEPARATOR+
+	private static final String LINE_SEPARATOR=System.lineSeparator();
+	private static final String HEADER1 = "import java.util.Scanner;"+LINE_SEPARATOR+
 									"public class ";
-	private static final String HEADER2 = LINESEPARATOR+
-									"{"+LINESEPARATOR +
-									"		"+SCANNER+LINESEPARATOR +
-									"	public static void main(String[] args)"+LINESEPARATOR +
-									"	{"+LINESEPARATOR;
+	private static final String HEADER2 = LINE_SEPARATOR+
+									"{"+LINE_SEPARATOR +
+									"		"+SCANNER+LINE_SEPARATOR +
+									"	public static void main(String[] args)"+LINE_SEPARATOR +
+									"	{"+LINE_SEPARATOR;
 
 	
 	public DecafFile convert(DecafFile file) throws IOException
@@ -44,7 +44,7 @@ public class Precompiler
 			
 			while ((line = r.readLine()) != null)
 			{
-				text+=line+LINESEPARATOR;
+				text+=line+LINE_SEPARATOR;
 				mainCode=mainCode&&line.indexOf("class")==-1;
 				
 				if(mainCode==true)
@@ -418,7 +418,7 @@ public class Precompiler
 		String code=HEADER1+fileName+HEADER2;
 		code+=text[0];
 		code+="}"+text[1];
-		code+="}"+LINESEPARATOR;
+		code+="}"+LINE_SEPARATOR;
 		return code;
 	}
 	
@@ -432,10 +432,10 @@ public class Precompiler
 	public static int getHeaderLineCount() {
 		int result = 0;
 		String header = HEADER1 + HEADER2;
-		int lineSeparatorLength = LINESEPARATOR.length();
+		int lineSeparatorLength = LINE_SEPARATOR.length();
 		int lastIndex = header.length() - lineSeparatorLength + 1;
 		for (int i = 0; i < lastIndex; ++i) {
-			if (LINESEPARATOR.equals(header.substring(i, i + lineSeparatorLength))) {
+			if (LINE_SEPARATOR.equals(header.substring(i, i + lineSeparatorLength))) {
 				result++;
 			}
 		}
