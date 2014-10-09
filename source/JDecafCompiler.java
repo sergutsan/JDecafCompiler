@@ -11,11 +11,13 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
+import java.io.*;
+
 public class JDecafCompiler
 {
 	private static final long HEADER_LINES=Precompiler.getHeaderLineCount();
 	private static final long FOOTER_LINES=2;// FIXME: make this a function of the actual footer in Precompiler.java
-	private static final String VERSION = "1.2.4";
+	private static final String VERSION = "1.2.5";
 
 	public static void main(String[] args)
 	{
@@ -59,6 +61,18 @@ public class JDecafCompiler
 			}
 			else
 			{
+				/* * * * * * * * * * * * * * * * * * * * * * * * * 
+				 * FIXME: remove this useless try/catch ...
+				 *   ...but make sure java files can be used in windows machines, 
+				 *   and particularly at the BBK labs
+				 * * * * * * * * * * * * * * * * * * * * * * * * */
+				try {
+					Precompiler precompiler=new Precompiler();
+					DecafFile file2=precompiler.convert(file);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				/* * * * * * * * * * */
 				files[i]=file;
 			}
 		}
@@ -88,7 +102,7 @@ public class JDecafCompiler
 		}
 		else if (!file.isFile())
 		{
-		  System.out.println(file.getAbsolutePath()+" is cannot be found");
+		  System.out.println(file.getAbsolutePath()+" cannot be found");
 		  return null;
 		}
 
@@ -100,6 +114,8 @@ public class JDecafCompiler
 	
 	private void compile(DecafFile[] files) throws Exception
 	{
+		boolean hacked = false;
+		String hackedJavaHomeBackup=System.getProperty("java.home");
 		//get an object to collect diagnostic messages
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
 
@@ -107,7 +123,18 @@ public class JDecafCompiler
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		
 		if (compiler == null) {
-			throw new ConfigurationException("No Java compiler available. Please review your local configuration."); 
+			/* * * Hack to make this work on BBK's labs for now * * * */
+			//System.out.println("No compiler found... using default...");
+			 hacked = true;
+			 System.setProperty("java.home", "C:\\Program Files\\Java\\jdk1.8.0_20");
+			 compiler = ToolProvider.getSystemJavaCompiler();
+			 //System.out.println("Compiler: " + compiler);
+			 //for (DecafFile file : Arrays.asList(files)) 
+			 //	 System.out.println("File: " + file);
+			 /* * * */
+			 if (compiler == null) {
+			 	 throw new ConfigurationException("No Java compiler available. Please review your local configuration.");
+			 }
 		}
 
 		//get a file manager for the files to be compiled
@@ -152,6 +179,10 @@ public class JDecafCompiler
 		catch(IOException e)
 		{
 			e.printStackTrace();
+		}
+		//restore environment if needed
+		if (hacked) {
+			System.setProperty("java.home", hackedJavaHomeBackup);
 		}
 	}
 	
