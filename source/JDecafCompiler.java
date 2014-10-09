@@ -41,10 +41,14 @@ public class JDecafCompiler
 				{
 					files[i]=precompile(file);
 				}
+				catch (JavaDecafException e) 
+				{
+					System.out.println("JavaDecaf Error: "+e.getMessage()+"\nfile:"+file.getAbsoluteFile());
+					return;				
+				} 
 				catch(Exception e)
 				{
 					System.out.println("Error 1: "+e.getMessage()+"\nfile:"+file.getAbsoluteFile());
-					//e.printStackTrace();
 					System.out.println("*** The process will terminate ***");
 					return;				
 				}
