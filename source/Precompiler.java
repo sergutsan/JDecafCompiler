@@ -253,7 +253,6 @@ public class Precompiler
 		do
 		{
 			token=tokenizer.peekToken(position++);
-			
 			if(token==null)
 			{
 				throw new JavaDecafException("Stand-alone method not started properly");
@@ -265,39 +264,36 @@ public class Precompiler
 		do
 		{
 			token=tokenizer.peekToken(position++);
-			
 			if(token==null)
 			{
 				throw new JavaDecafException("Stand-alone method not started properly");
 			}
-			
 		} while(token.token.isLeftCurly()==false);
 		
-		boolean stop=false;
+		/*
+		 * Not sure the rest of this method does anything at all (SG 2014-10-09)
+		 */
 		int braces=1;
-		
-		while(stop==false)
+
+		boolean reachedEndOfMethod=false;
+		while(reachedEndOfMethod==false)
 		{
 			token=tokenizer.peekToken(position++);
-			
 			if(token==null)
 			{
 				throw new JavaDecafException("Stand-alone method not terminated properly");
 			}
-			
-			if(token.token.isLeftCurly()==true)
+			else if(token.token.isLeftCurly()==true)
 			{
 				braces++;
 			}
-			
-			if(token.token.isRightCurly()==true)
+			else if(token.token.isRightCurly()==true)
 			{
 				braces--;
 			}
-			
 			if(braces==0)
 			{
-				stop=true;
+				reachedEndOfMethod=true;
 			}
 		}
 		
