@@ -94,21 +94,7 @@ public class Precompiler
 
 			switch(token.token.type)
 			{
-			case TokenTypes.WHITESPACE:
-				break;
-			case TokenTypes.NULL:
-				break;
-			case TokenTypes.RESERVED_WORD:
-				if(token.token.getLexeme().equals("class"))
-				{
-					if(inClass==true)
-					{
-						throw new JavaDecafException("Class nesting is not allowed ");
-					}
-
-					classes++;
-					inClass=true;
-				}
+			case TokenTypes.DATA_TYPE:
 				break;
 			case TokenTypes.FUNCTION:
 				if(token.token.getLexeme().equals("print"))
@@ -168,7 +154,19 @@ public class Precompiler
 						token.token.setNextToken(next);
 					}
 				}
-			case TokenTypes.DATA_TYPE:
+			case TokenTypes.NULL:
+				break;
+			case TokenTypes.RESERVED_WORD:
+				if(token.token.getLexeme().equals("class"))
+				{
+					if(inClass==true)
+					{
+						throw new JavaDecafException("Class nesting is not allowed ");
+					}
+
+					classes++;
+					inClass=true;
+				}
 				break;
 			case TokenTypes.SEPARATOR:
 				if(token.token.getLexeme().equals("{"))
@@ -203,6 +201,8 @@ public class Precompiler
 				{
 					throw new JavaDecafException("Code is not allowed after class definitions ");
 				}
+				break;
+			case TokenTypes.WHITESPACE:
 				break;
 			default:
 			}
