@@ -140,11 +140,30 @@ public class Precompiler
 				{
 					substituteToken(tokenizer, token, READLINE);
 				}
+			case TokenTypes.LITERAL_BOOLEAN:
+				// LITERAL_BOOLEAN produces many false positives :-(
+				if(token.token.getLexeme().equals("true"))
+				{
+					substituteToken(tokenizer, token, "(new Boolean(true))");
+				} 
+				else if(token.token.getLexeme().equals("false"))
+				{
+					substituteToken(tokenizer, token, "(new Boolean(false))");
+				} 
+				break;
+			case TokenTypes.LITERAL_CHAR:
+				substituteToken(tokenizer, token, "(new Character(" + token.token.getLexeme() + "))");
+				break;
+			case TokenTypes.LITERAL_NUMBER_DECIMAL_INT:
+				substituteToken(tokenizer, token, "(new Integer(" + token.token.getLexeme() + "))");
+				break;
 			case TokenTypes.NULL:
 				break;
 			case TokenTypes.OPERATOR:
 				if(token.token.getLexeme().equals("==")) {
-					// FIXME: here something must be done to transform == into .equals()	
+					// FIXME: here something must be done to transform == into .equals()
+					
+					substituteToken(tokenizer, token, ".equals(");
 				}
 				break;
 			case TokenTypes.RESERVED_WORD:
