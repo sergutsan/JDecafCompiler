@@ -109,7 +109,8 @@ public class Precompiler
 
 					classes++;
 					inClass=true;
-				}				
+				}
+				break;
 			case TokenTypes.FUNCTION:
 				if(token.token.getLexeme().equals("print"))
 				{
@@ -132,7 +133,8 @@ public class Precompiler
 						token.token.set(PRINTLN.toCharArray(), 0, PRINTLN.length()-1, 0, token.token.type);
 						token.token.setNextToken(next);
 					}
-				}			
+				}		
+				break;
 			case TokenTypes.IDENTIFIER:
 				if(token.token.getLexeme().equals("readInt"))
 				{
@@ -168,6 +170,7 @@ public class Precompiler
 					}
 				}
 			case TokenTypes.DATA_TYPE:
+				break;
 			case TokenTypes.SEPARATOR:
 				if(token.token.getLexeme().equals("{"))
 				{
@@ -412,7 +415,7 @@ public class Precompiler
 		
 		return true;		
 	}
-		
+
 	private String insertBoilerplateCode(String fileName, String[] text)
 	{
 		String code=HEADER1+fileName+HEADER2;
