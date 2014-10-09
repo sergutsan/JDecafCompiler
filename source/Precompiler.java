@@ -98,21 +98,21 @@ public class Precompiler
 				// FIXME: change primitive types to boxed types so we can change == for .equals()
 				String type = token.token.getLexeme();
 				if (type.equals("int")) {
-
+					substituteToken(tokenizer, token, "Integer");
 				} else if (type.equals("long")) {
-					
+					substituteToken(tokenizer, token, "Long");
 				} else if (type.equals("double")) {
-					
+					substituteToken(tokenizer, token, "Double");
 				} else if (type.equals("boolean")) {
-					
+					substituteToken(tokenizer, token, "Boolean");
 				} else if (type.equals("char")) {
-					
+					substituteToken(tokenizer, token, "Character");
 				} else if (type.equals("byte")) {
-					
+					substituteToken(tokenizer, token, "Byte");
 				} else if (type.equals("short")) {
-					
+					substituteToken(tokenizer, token, "Short");
 				} else if (type.equals("float")) {
-					
+					substituteToken(tokenizer, token, "Float");
 				} else {
 					throw new JavaDecafException("Unsupported primitive type: " + type);
  				}
