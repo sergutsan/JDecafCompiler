@@ -166,7 +166,6 @@ public class Precompiler
 			case TokenTypes.OPERATOR:
 				if(token.token.getLexeme().equals("==")) {
 					// FIXME: here something must be done to transform == into .equals()
-					
 					substituteToken(tokenizer, token, ".equals(");
 				}
 				break;

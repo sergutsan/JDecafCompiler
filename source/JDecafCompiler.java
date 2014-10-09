@@ -15,6 +15,7 @@ public class JDecafCompiler
 {
 	private static final long HEADER_LINES=Precompiler.getHeaderLineCount();
 	private static final long FOOTER_LINES=2;// FIXME: make this a function of the actual footer in Precompiler.java
+	private static final String VERSION = "1.2.4";
 
 	public static void main(String[] args)
 	{
@@ -22,9 +23,12 @@ public class JDecafCompiler
 		{
 			System.out.println("No source .jdc files given...");
 			return;
+		} else if (Arrays.asList(args).contains("-version")) {
+			System.out.println("Java Decaf v" + VERSION + ".");
+		} else {
+			JDecafCompiler c = new JDecafCompiler(); 
+			c.launch(args);
 		}
-		JDecafCompiler c = new JDecafCompiler(); 
-		c.launch(args);
 	}
 	
 	private void launch(String... args) {
@@ -167,7 +171,7 @@ public class JDecafCompiler
 
 class DecafFile extends File
 {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1233345L;
 	public FileProperties properties;
 	
 	public DecafFile(String name)
