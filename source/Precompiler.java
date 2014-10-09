@@ -19,6 +19,14 @@ public class Precompiler
 	private static final String DELIMITER = " static{scanner.useDelimiter(System.getProperty(\"line.separator\"));}";
 	private static final String SCANNER = READER+DELIMITER;
 	private static final String LINESEPARATOR=System.lineSeparator();
+	private static final String HEADER1 = "import java.util.Scanner;"+LINESEPARATOR+
+									"public class ";
+	private static final String HEADER2 = LINESEPARATOR+
+									"{"+LINESEPARATOR +
+									"		"+SCANNER+LINESEPARATOR +
+									"	public static void main(String[] args)"+LINESEPARATOR +
+									"	{"+LINESEPARATOR;
+
 	
 	public DecafFile convert(DecafFile file) throws IOException
 	{
@@ -407,17 +415,31 @@ public class Precompiler
 		
 	private String insertBoilerplateCode(String fileName, String[] text)
 	{
-		String code="";
-		code+="import java.util.Scanner;"+LINESEPARATOR;
-		code+="public class "+fileName+LINESEPARATOR;
-		code+="{"+LINESEPARATOR;
-		code+="		"+SCANNER+LINESEPARATOR;
-		code+="	public static void main(String[] args)"+LINESEPARATOR;
-		code+="	{"+LINESEPARATOR;
+		String code=HEADER1+fileName+HEADER2;
 		code+=text[0];
 		code+="}"+text[1];
 		code+="}"+LINESEPARATOR;
 		return code;
+	}
+	
+	/**
+	 * Returns the number of lines in the header.
+	 * 
+	 * Basically, just counts the number of CR/LF. 
+	 * 
+	 * @return the number of lines in the header.
+	 */
+	public static int getHeaderLineCount() {
+		int result = 0;
+		String header = HEADER1 + HEADER2;
+		int lineSeparatorLength = LINESEPARATOR.length();
+		int lastIndex = header.length() - lineSeparatorLength + 1;
+		for (int i = 0; i < lastIndex; ++i) {
+			if (LINESEPARATOR.equals(header.substring(i, i + lineSeparatorLength))) {
+				result++;
+			}
+		}
+		return result;
 	}
 }
 

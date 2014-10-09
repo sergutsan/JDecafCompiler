@@ -13,7 +13,7 @@ import javax.tools.ToolProvider;
 
 public class JDecafCompiler
 {
-	private static final long HEADER_LINES=6;// FIXME: make this a function of the actual header in Precompiler.java
+	private static final long HEADER_LINES=Precompiler.getHeaderLineCount();
 	private static final long FOOTER_LINES=2;// FIXME: make this a function of the actual footer in Precompiler.java
 
 	public static void main(String[] args)
