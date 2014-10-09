@@ -20,7 +20,7 @@ public class Precompiler
 	private static final String SCANNER = READER+DELIMITER;
 	private static final String LINESEPARATOR=System.lineSeparator();
 	
-	public DecafFile convert(DecafFile file) throws Exception
+	public DecafFile convert(DecafFile file) throws IOException
 	{
 		String line="";
 		String text="";
@@ -50,12 +50,12 @@ public class Precompiler
 		catch(FileNotFoundException e)
 		{
 			e.printStackTrace();
-			throw new Exception("file "+file.getAbsoluteFile()+" cannot be found");
+			throw new FileNotFoundException("File "+file.getAbsoluteFile()+" cannot be found");
 		}
 		catch(IOException e)
 		{
 			e.printStackTrace();
-			throw new Exception("read error in file "+file.getAbsoluteFile());
+			throw new IOException("Read error in file "+file.getAbsoluteFile());
 		}
 
 		DocumentTokenizer tokenizer=new DocumentTokenizer(text);
@@ -223,13 +223,13 @@ public class Precompiler
 		catch(IOException e)
 		{
 			e.printStackTrace();
-			throw new Exception("write error in file "+file.getAbsoluteFile());
+			throw new IOException("write error in file "+file.getAbsoluteFile());
 		}
 
 		return file;		
 	}
 
-	private void processMethod(DocumentTokenizer tokenizer) throws Exception
+	private void processMethod(DocumentTokenizer tokenizer)
 	{
 		int position=tokenizer.getCurrentPosition();
 
@@ -289,7 +289,7 @@ public class Precompiler
 		token.isMethodStop=true;
 	}
 	
-	private boolean isMethod(DocumentTokenizer tokenizer) throws Exception
+	private boolean isMethod(DocumentTokenizer tokenizer)
 	{
 		int position=tokenizer.getCurrentPosition();
 
