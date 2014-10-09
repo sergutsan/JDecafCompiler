@@ -74,7 +74,7 @@ public class Precompiler
 				{
 					if(inClass==false)
 					{
-						throw new Exception("stand-alone methods are not allowed after class definitions");
+						throw new JavaDecafException("Stand-alone methods are not allowed after class definitions");
 					}
 				}
 				else
@@ -96,7 +96,7 @@ public class Precompiler
 				{
 					if(inClass==true)
 					{
-						throw new Exception("class nesting is not allowed ");
+						throw new JavaDecafException("Class nesting is not allowed ");
 					}
 
 					classes++;
@@ -191,7 +191,7 @@ public class Precompiler
 
 				if(classes>0 && inClass==false)
 				{
-					throw new Exception("code is not allowed after class definitions ");
+					throw new JavaDecafException("Code is not allowed after class definitions ");
 				}
 				break;
 			default:
@@ -241,7 +241,7 @@ public class Precompiler
 			
 			if(token==null)
 			{
-				throw new Exception("stand-alone method not started properly");
+				throw new JavaDecafException("Stand-alone method not started properly");
 			}
 		} while(token.token.type==TokenTypes.WHITESPACE);
 		
@@ -253,7 +253,7 @@ public class Precompiler
 			
 			if(token==null)
 			{
-				throw new Exception("stand-alone method not started properly");
+				throw new JavaDecafException("Stand-alone method not started properly");
 			}
 			
 		} while(token.token.isLeftCurly()==false);
@@ -267,7 +267,7 @@ public class Precompiler
 			
 			if(token==null)
 			{
-				throw new Exception("stand-alone method not terminated properly");
+				throw new JavaDecafException("Stand-alone method not terminated properly");
 			}
 			
 			if(token.token.isLeftCurly()==true)
@@ -418,5 +418,13 @@ public class Precompiler
 		code+="}"+text[1];
 		code+="}"+LINESEPARATOR;
 		return code;
+	}
+}
+
+class JavaDecafException extends RuntimeException {
+	private static final long serialVersionUID = 1L;
+	
+	public JavaDecafException(String s) {
+		super(s);
 	}
 }
