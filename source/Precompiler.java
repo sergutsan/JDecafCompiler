@@ -120,60 +120,25 @@ public class Precompiler
 			case TokenTypes.FUNCTION:
 				if(token.token.getLexeme().equals("print"))
 				{
-					CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);
-					
-					if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
-					{					
-						Token next=token.token.getNextToken();
-						token.token.set(PRINT.toCharArray(), 0, PRINT.length()-1, 0, token.token.type);
-						token.token.setNextToken(next);
-					}
+					substituteToken(tokenizer, token, PRINT);
 				}
 				else if(token.token.getLexeme().equals("println"))
 				{
-					CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);
-					
-					if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
-					{					
-						Token next=token.token.getNextToken();
-						token.token.set(PRINTLN.toCharArray(), 0, PRINTLN.length()-1, 0, token.token.type);
-						token.token.setNextToken(next);
-					}
+					substituteToken(tokenizer, token, PRINTLN);
 				}		
 				break;
 			case TokenTypes.IDENTIFIER:
 				if(token.token.getLexeme().equals("readInt"))
 				{
-					CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);
-					
-					if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
-					{					
-						Token next=token.token.getNextToken();
-						token.token.set(READINT.toCharArray(), 0, READINT.length()-1, 0, token.token.type);
-						token.token.setNextToken(next);
-					}
+					substituteToken(tokenizer, token, READINT);
 				}
 				else if(token.token.getLexeme().equals("readDouble"))
 				{
-					CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);
-					
-					if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
-					{					
-						Token next=token.token.getNextToken();
-						token.token.set(READDOUBLE.toCharArray(), 0, READDOUBLE.length()-1, 0, token.token.type);
-						token.token.setNextToken(next);
-					}
+					substituteToken(tokenizer, token, READDOUBLE);
 				}
 				else if(token.token.getLexeme().equals("readLine"))
 				{
-					CodeToken previous=tokenizer.peekToken(tokenizer.getCurrentPosition()-2);
-					
-					if(previous==null||previous.token.isPaintable()==false||previous.token.getLexeme().equals(".")==false)
-					{					
-						Token next=token.token.getNextToken();
-						token.token.set(READLINE.toCharArray(), 0, READLINE.length()-1, 0, token.token.type);
-						token.token.setNextToken(next);
-					}
+					substituteToken(tokenizer, token, READLINE);
 				}
 			case TokenTypes.NULL:
 				break;
