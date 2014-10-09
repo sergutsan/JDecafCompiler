@@ -157,7 +157,9 @@ public class Precompiler
 			case TokenTypes.NULL:
 				break;
 			case TokenTypes.OPERATOR:
-				// FIXME: here something must be done to transform == into .equals()
+				if(token.token.getLexeme().equals("==")) {
+					// FIXME: here something must be done to transform == into .equals()	
+				}
 				break;
 			case TokenTypes.RESERVED_WORD:
 				if(token.token.getLexeme().equals("class"))
