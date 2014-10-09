@@ -167,6 +167,16 @@ public class Precompiler
 				if(token.token.getLexeme().equals("==")) {
 					// FIXME: here something must be done to transform == into .equals()
 					substituteToken(tokenizer, token, ".equals(");
+					int position=tokenizer.getCurrentPosition();
+					do
+					{
+						token=tokenizer.peekToken(position++);
+						if(token==null)
+						{
+							throw new JavaDecafException("Equality clause without a right-hand term");
+						}
+					} while(token.token.type==TokenTypes.WHITESPACE);
+					substituteToken(tokenizer, token, token.token.getLexeme() + ")");
 				}
 				break;
 			case TokenTypes.RESERVED_WORD:
