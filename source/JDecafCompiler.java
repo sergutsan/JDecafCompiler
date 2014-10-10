@@ -71,7 +71,7 @@ public class JDecafCompiler
 				 * * * * * * * * * * * * * * * * * * * * * * * * */
 				try {
 					Precompiler precompiler=new Precompiler();
-					DecafFile file2=precompiler.convert(file);
+					precompiler.convert(file);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

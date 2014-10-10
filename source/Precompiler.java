@@ -27,8 +27,9 @@ public class Precompiler
 									"		"+SCANNER+LINE_SEPARATOR +
 									"	public static void main(String[] args)"+LINE_SEPARATOR +
 									"	{"+LINE_SEPARATOR;
-
+	private static final boolean BROKEN = true;
 	
+	@SuppressWarnings("unused")
 	public DecafFile convert(DecafFile file) throws IOException
 	{
 		String line="";
@@ -97,27 +98,28 @@ public class Precompiler
 			switch(token.token.type)
 			{
 			case TokenTypes.DATA_TYPE:
-				// FIXME: change primitive types to boxed types so we can change == for .equals()
-				String type = token.token.getLexeme();
-				if (type.equals("int")) {
-					substituteToken(tokenizer, token, "Integer");
-				} else if (type.equals("long")) {
-					substituteToken(tokenizer, token, "Long");
-				} else if (type.equals("double")) {
-					substituteToken(tokenizer, token, "Double");
-				} else if (type.equals("boolean")) {
-					substituteToken(tokenizer, token, "Boolean");
-				} else if (type.equals("char")) {
-					substituteToken(tokenizer, token, "Character");
-				} else if (type.equals("byte")) {
-					substituteToken(tokenizer, token, "Byte");
-				} else if (type.equals("short")) {
-					substituteToken(tokenizer, token, "Short");
-				} else if (type.equals("float")) {
-					substituteToken(tokenizer, token, "Float");
-				} else {
-					throw new JavaDecafException("Unsupported primitive type: " + type);
- 				}
+				if (!BROKEN) {
+					String type = token.token.getLexeme();
+					if (type.equals("int")) {
+						substituteToken(tokenizer, token, "Integer");
+					} else if (type.equals("long")) {
+						substituteToken(tokenizer, token, "Long");
+					} else if (type.equals("double")) {
+						substituteToken(tokenizer, token, "Double");
+					} else if (type.equals("boolean")) {
+						substituteToken(tokenizer, token, "Boolean");
+					} else if (type.equals("char")) {
+						substituteToken(tokenizer, token, "Character");
+					} else if (type.equals("byte")) {
+						substituteToken(tokenizer, token, "Byte");
+					} else if (type.equals("short")) {
+						substituteToken(tokenizer, token, "Short");
+					} else if (type.equals("float")) {
+						substituteToken(tokenizer, token, "Float");
+					} else {
+						throw new JavaDecafException("Unsupported primitive type: " + type);
+	 				}
+				}
 				break;
 			case TokenTypes.FUNCTION:
 				if(token.token.getLexeme().equals("print"))
@@ -149,30 +151,37 @@ public class Precompiler
 				}
 			// Literals are boxed. This makes the s/==/.equals/g substitution easier 
 			case TokenTypes.LITERAL_BOOLEAN:
-				// LITERAL_BOOLEAN produces many false positives :-(
-				if(token.token.getLexeme().equals("true"))
-				{
-					substituteToken(tokenizer, token, "(new Boolean(true))");
-				} 
-				else if(token.token.getLexeme().equals("false"))
-				{
-					substituteToken(tokenizer, token, "(new Boolean(false))");
-				} 
+				if (!BROKEN) {
+					// LITERAL_BOOLEAN produces many false positives :-(
+					if(token.token.getLexeme().equals("true"))
+					{
+						substituteToken(tokenizer, token, "(new Boolean(true))");
+					} 
+					else if(token.token.getLexeme().equals("false"))
+					{
+						substituteToken(tokenizer, token, "(new Boolean(false))");
+					} 
+				}
 				break;
 			case TokenTypes.LITERAL_CHAR:
-				substituteToken(tokenizer, token, "(new Character(" + token.token.getLexeme() + "))");
+				if (!BROKEN) {
+					substituteToken(tokenizer, token, "(new Character(" + token.token.getLexeme() + "))");
+				}
 				break;
 			case TokenTypes.LITERAL_NUMBER_DECIMAL_INT:
-				substituteToken(tokenizer, token, "(new Integer(" + token.token.getLexeme() + "))");
+				if (!BROKEN) {
+					substituteToken(tokenizer, token, "(new Integer(" + token.token.getLexeme() + "))");
+				}
 				break;
 			case TokenTypes.LITERAL_NUMBER_FLOAT:
-				substituteToken(tokenizer, token, "(new Double(" + token.token.getLexeme() + "))");
+				if (!BROKEN) {
+					substituteToken(tokenizer, token, "(new Double(" + token.token.getLexeme() + "))");
+				}
 				break;
 			case TokenTypes.NULL:
 				break;
 			case TokenTypes.OPERATOR:
-				if(token.token.getLexeme().equals("==")) {
-					// FIXME: here something must be done to transform == into .equals()
+				if(!BROKEN && token.token.getLexeme().equals("==")) {
 					substituteToken(tokenizer, token, ".equals(");
 					int position=tokenizer.getCurrentPosition();
 					do
