@@ -11,13 +11,11 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
-import java.io.*;
-
 public class JDecafCompiler
 {
 	private static final long HEADER_LINES=Precompiler.getHeaderLineCount();
 	private static final long FOOTER_LINES=2;// FIXME: make this a function of the actual footer in Precompiler.java
-	private static final String VERSION = "1.2.5";
+	private static final String VERSION = "1.2.8";
 
 	public static void main(String[] args)
 	{
@@ -37,10 +35,15 @@ public class JDecafCompiler
 		//get references for the files to be compiled
 		DecafFile[] files=new DecafFile[args.length];
 		
+		boolean commandLineArgumentsOK = processCommandLineArguments(args);
+		if (!commandLineArgumentsOK) { 
+			return;
+		}
+		
 		for(int i=0;i<args.length;i++)
 		{
 			DecafFile file=new DecafFile(args[i]);
-			
+
 			if(args[i].endsWith(".jdc"))
 			{
 				try
@@ -93,22 +96,36 @@ public class JDecafCompiler
 		}
 	}
 
+	private boolean processCommandLineArguments(String...args) {
+		boolean result = true;
+		String nonExistingFilenames = "";
+		String directoryFilenames = "";
+		for(int i=0;i<args.length;i++) {
+			DecafFile file=new DecafFile(args[i]);
+			if (file.isDirectory())
+			{
+				result = false;
+				directoryFilenames += file.getName() + " ";
+			}
+			else if (!file.isFile())
+			{
+				result = false;
+				nonExistingFilenames += file.getName() + " ";
+			}
+		}
+		if (nonExistingFilenames.length() != 0) {
+			System.out.println("Could not find files: " + nonExistingFilenames);
+		}
+		if (directoryFilenames.length() != 0) {
+			System.out.println("Cannot process directories: " + directoryFilenames);
+		}
+		return result;
+	}
+
 	private DecafFile precompile(DecafFile file) throws Exception
 	{
-		if (file.isDirectory())
-		{
-		  System.out.println(file.getAbsolutePath()+" is a directory");
-		  return null;
-		}
-		else if (!file.isFile())
-		{
-		  System.out.println(file.getAbsolutePath()+" cannot be found");
-		  return null;
-		}
-
 		Precompiler precompiler=new Precompiler();
 		file=precompiler.convert(file);
-	
 		return file;
 	}
 	
