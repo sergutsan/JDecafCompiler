@@ -122,24 +122,29 @@ public class Precompiler
 			case TokenTypes.FUNCTION:
 				if(token.token.getLexeme().equals("print"))
 				{
+					assertNextToken(tokenizer, token, "(");
 					substituteToken(tokenizer, token, PRINT);
 				}
 				else if(token.token.getLexeme().equals("println"))
 				{
+					assertNextToken(tokenizer, token, "(");
 					substituteToken(tokenizer, token, PRINTLN);
 				}		
 				break;
 			case TokenTypes.IDENTIFIER:
 				if(token.token.getLexeme().equals("readInt"))
 				{
+					assertNextToken(tokenizer, token, "(");
 					substituteToken(tokenizer, token, READINT);
 				}
 				else if(token.token.getLexeme().equals("readDouble"))
 				{
+					assertNextToken(tokenizer, token, "(");
 					substituteToken(tokenizer, token, READDOUBLE);
 				}
 				else if(token.token.getLexeme().equals("readLine"))
 				{
+					assertNextToken(tokenizer, token, "(");
 					substituteToken(tokenizer, token, READLINE);
 				}
 			// Literals are boxed. This makes the s/==/.equals/g substitution easier 
@@ -262,6 +267,36 @@ public class Precompiler
 		}
 
 		return file;		
+	}
+
+	/**
+	 * If the next token in the tokenizer (not counting blanks) is equal to the given 
+	 * string, nothing happens. Otherwise, a JavaDecafException is thrown. 
+	 * @param tokenizer the tokenizer
+	 * @param token the current token
+	 * @param expected the string to check
+	 * @throws JavaDecafException if the next token is not equal to the given string
+	 */
+	private void assertNextToken(DocumentTokenizer tokenizer, CodeToken token, String expected) {
+		int position=tokenizer.getCurrentPosition();
+		CodeToken nextToken=null;
+		boolean error = false;
+		do
+		{
+			nextToken=tokenizer.peekToken(position);
+			if(nextToken==null)
+			{
+				error = true;
+			}
+			position++;
+		} while(nextToken.token.type==TokenTypes.WHITESPACE);
+		if (!nextToken.token.getLexeme().equals(expected))
+		{
+			error = true;
+		}
+		if (error) {
+			throw new JavaDecafException("'" + expected + "' expected.");
+		}
 	}
 
 	/**

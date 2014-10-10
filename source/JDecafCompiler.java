@@ -52,7 +52,7 @@ public class JDecafCompiler
 				}
 				catch (JavaDecafException e) 
 				{
-					System.out.println("JavaDecaf Error: "+e.getMessage()+"\nfile:"+file.getAbsoluteFile());
+					System.out.println("Problem: "+e.getMessage()+"\nfile:"+file.getAbsoluteFile());
 					return;				
 				} 
 				catch(Exception e)
