@@ -67,6 +67,8 @@ public class Precompiler
 			throw new IOException("Read error in file "+file.getAbsoluteFile());
 		}
 
+		text = removeComments(text);
+		
 		DocumentTokenizer tokenizer=new DocumentTokenizer(text);
 		
 		boolean inClass=false;
@@ -260,6 +262,59 @@ public class Precompiler
 		}
 
 		return file;		
+	}
+
+	/**
+	 * Takes the input string as source code and removes the comments, i.e. 
+	 * <ul>  
+	 *   <li>Any text between a "//" and the end of the line (i.e. System.lineSeparator())</li>  
+	 *   <li>Any text between a "/*" and a "*\/"</li>  
+	 * </ul>  
+	 * @param text a string representing a piece of source, e.g. a full Java Decaf script
+	 * @return the source code without comments
+	 * @throws JavaDecafException if there is a large comment open but not closed
+	 */
+	public static String removeComments(String text) {
+		String result = "";
+		boolean inLargeComment = false; // Multi-line comments: /* ... */
+		boolean inSmallComment = false; // Inline comments: // ... \n
+		int lineSeparatorSize = LINE_SEPARATOR.length();
+		for (int i = 0; i < text.length(); ++i) {
+			char nextChar = text.charAt(i); 
+			if (!inLargeComment && !inSmallComment) {
+				if (nextChar != '/') {
+					result += nextChar; 
+				} else {
+					if (text.charAt(i+1) == '*') {
+						inLargeComment = true;
+						i++;
+					} else if (text.charAt(i+1) == '/') {
+						inSmallComment = true;
+						i++;
+					} else {
+						result += nextChar;
+					}
+				}
+			} else if (inLargeComment) {
+				if (nextChar == '*' && text.charAt(i+1) == '/') {
+					inLargeComment = false;
+					i++;
+				}
+			} else if (inSmallComment) {
+				if (text.substring(i, i+lineSeparatorSize).equals(LINE_SEPARATOR)) {
+					inSmallComment = false;
+					i += lineSeparatorSize;
+				}
+			} else {
+				throw new IllegalStateException("Impossible state.");
+			}
+		}
+		if (inLargeComment) {
+			throw new JavaDecafException("Comment open with /* but never closed with */.");
+		} else if (inSmallComment) {
+			result += LINE_SEPARATOR;
+		}
+		return result;
 	}
 
 	/**
