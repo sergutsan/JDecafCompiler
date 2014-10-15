@@ -340,13 +340,17 @@ public class Precompiler
 					}
 				}
 			} else if (inLargeComment) {
-				if (nextChar == '*' && text.charAt(i+1) == '/') {
+				if (text.substring(i, i+lineSeparatorSize).equals(LINE_SEPARATOR)) {
+					result += LINE_SEPARATOR;
+					i += lineSeparatorSize;
+				} else if (nextChar == '*' && text.charAt(i+1) == '/') {
 					inLargeComment = false;
 					i++;
 				}
 			} else if (inSmallComment) {
 				if (text.substring(i, i+lineSeparatorSize).equals(LINE_SEPARATOR)) {
 					inSmallComment = false;
+					result += LINE_SEPARATOR;
 					i += lineSeparatorSize;
 				}
 			} else {
