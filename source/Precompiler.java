@@ -342,7 +342,7 @@ public class Precompiler
 			} else if (inLargeComment) {
 				if (text.substring(i, i+lineSeparatorSize).equals(LINE_SEPARATOR)) {
 					result += LINE_SEPARATOR;
-					i += lineSeparatorSize;
+					i += lineSeparatorSize -1;
 				} else if (nextChar == '*' && text.charAt(i+1) == '/') {
 					inLargeComment = false;
 					i++;
@@ -351,7 +351,7 @@ public class Precompiler
 				if (text.substring(i, i+lineSeparatorSize).equals(LINE_SEPARATOR)) {
 					inSmallComment = false;
 					result += LINE_SEPARATOR;
-					i += lineSeparatorSize;
+					i += lineSeparatorSize -1;
 				}
 			} else {
 				throw new IllegalStateException("Impossible state.");

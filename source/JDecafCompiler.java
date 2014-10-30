@@ -15,7 +15,7 @@ public class JDecafCompiler
 {
 	private static final long HEADER_LINES=Precompiler.getHeaderLineCount();
 	private static final long FOOTER_LINES=2;// FIXME: make this a function of the actual footer in Precompiler.java
-	private static final String VERSION = "1.3.0";
+	private static final String VERSION = "1.3.1";
 
 	public static void main(String[] args)
 	{
